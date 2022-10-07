@@ -1,24 +1,41 @@
-import React from 'react';
-import logo from './logo.svg';
+import React, { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { Route, Routes } from 'react-router-dom';
 import './App.css';
+import Aside from './components/Aside';
+import Header from './components/Header';
+import LoginPage from './pages/LoginPage';
+import OrderPage from './pages/OrderPage';
+import TablePage from './pages/TablePage';
+import { login } from './redux/slices/UserSlice';
 
-function App() {
+
+const App: React.FC = () => {
+  const user = useSelector((state: {user: {name: string}}) => state.user.name);
+
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    const data = localStorage.getItem('login');
+    dispatch(login({name: data}));
+  }, [])
+
+  if (!user) {
+    return <LoginPage />
+  }
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div className="app">
+      <Header />
+      <main className='main'>
+        <Aside />
+        <div className="content">
+          <Routes>
+            <Route path="/table" element={<TablePage />} />
+            <Route path="/order" element={<OrderPage />} />
+          </Routes>
+        </div>
+      </main>
     </div>
   );
 }
